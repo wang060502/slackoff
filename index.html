@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摸鱼办提醒</title>
+    <style>
+        /* 全局样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* 设置白天和黑夜模式的CSS变量 */
+        :root {
+            --bg-color-light: #f9fafb;
+            --bg-color-dark: #2c3e50;
+            --text-color-light: #333;
+            --text-color-dark: #fff;
+            --link-color-light: #3498db;
+            --link-color-dark: #1abc9c;
+            --button-bg-light: #3498db;
+            --button-bg-dark: #1abc9c;
+            --button-hover-light: #2980b9;
+            --button-hover-dark: #16a085;
+        }
+/* 白天模式 */
+body.day-mode {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+}
+
+/* 夜间模式 */
+body.night-mode {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+}
+
+/* 白天模式下的文字颜色 */
+body.day-mode p, body.day-mode h1, body.day-mode .advice, body.day-mode .final-tip, body.day-mode .moyu-tip {
+    color: var(--text-color-light);
+}
+
+/* 夜间模式下的文字颜色 */
+body.night-mode p, body.night-mode h1, body.night-mode .advice, body.night-mode .final-tip, body.night-mode .moyu-tip {
+    color: var(--text-color-light); /* 使用更亮的文字颜色 */
+}
+
+/* 按钮样式 */
+body.day-mode .button {
+    background-color: var(--button-bg-light);
+    color: #fff;
+}
+
+body.night-mode .button {
+    background-color: var(--button-bg-dark);
+    color: #fff;
+}
+
+body.night-mode .button:hover {
+    background-color: var(--button-hover-dark);
+}
+
+/* 节假日倒计时文字颜色 */
+body.day-mode li {
+    color: #34495e;
+}
+
+body.night-mode li {
+    color: white; /* 在夜间模式下使用浅色字体 */
+}
+
+/* 强调文字 */
+body.night-mode li span {
+    color: #e74c3c; /* 强调的文字颜色 */
+}
+body.night-mode p, body.night-mode h1, body.night-mode .advice, body.night-mode .final-tip, body.night-mode .moyu-tip {
+    color: #ffffff;
+}
+
+        /* 外部容器 */
+        .reminder {
+            margin: 40px auto;
+            padding: 30px;
+            max-width: 600px;
+            /* background: var(--button-bg-light); */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* 段落样式 */
+        p {
+            font-size: 1em;
+            margin: 10px 0;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        /* 摸鱼金句 */
+        .advice {
+            font-size: 1.1em;
+            font-style: italic;
+            color: #7f8c8d;
+            margin: 15px 0;
+        }
+
+        /* 节假日倒计时列表 */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            font-size: 1.1em;
+            font-weight: 500;
+            margin: 10px 0;
+            color: #34495e;
+        }
+
+        li span {
+            font-weight: bold;
+            color: #e74c3c; /* 强调天数 */
+        }
+
+        /* 温馨提示 */
+        .final-tip, .moyu-tip {
+            font-size: 1em;
+            color: #7f8c8d;
+            margin-top: 0px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        /* 按钮样式 */
+        .button {
+            /* display: inline-block; */
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #ffffff;
+            background-color: var(--button-bg-light);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: var(--button-hover-light);
+        }
+
+        .night-mode .button {
+            background-color: var(--button-bg-dark);
+        }
+
+        .night-mode .button:hover {
+            background-color: var(--button-hover-dark);
+        }
+        /* 容器样式，使用 flexbox 来并排显示图片和节假日倒计时 */
+.countdown-container {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    margin-bottom: 20px;
+}
+
+/* 图片样式 */
+.countdown-image {
+  object-fit: cover;
+    max-width: 40%; /* 图片占容器宽度的 40% */
+    height: auto; /* 保持图片比例 */
+    margin-right: 20px; /* 图片与文字之间的间距 */
+}
+
+/* 文字部分样式 */
+.countdown-text {
+    flex: 1; /* 文字区域占据剩余空间 */
+    text-align: left;
+}
+
+    </style>
+</head>
+<body>
+  <div class="reminder">
+    <h1>『摸鱼办提醒』</h1>
+   
+    <!-- 随机金句 -->
+    <p id="greeting">上午好，摸鱼人！</p>
+    <p id="currentDate"></p>
+    <p class="moyu-tip">
+      工作再累，一定不要忘记摸鱼哦，有事没事起身去茶水间，去厕所，去廊道走走别老在工位上坐着，钱是老板的，但命是自己的。
+  </p>
+    <p class="advice" id="randomQuote"></p>
+
+    <h2>节假日与调休安排</h2>
+
+    <!-- 图片和节假日倒计时并排 -->
+    <div class="countdown-container">
+      <img src="image.png" alt="摸鱼办图片" class="countdown-image">
+      <div class="countdown-text">
+        <ul id="holidayList"></ul>
+      </div>
+    </div>
+ 
+    <p class="final-tip">
+        认认真真上班，这根本就不叫赚钱，那是用劳动换取报酬。只有在上班的时候摸鱼划水，你才是从老板手里赚到了钱。
+    </p>
+
+    <!-- 切换主题按钮 -->
+    <button class="button" onclick="toggleTheme()">切换护眼模式</button>
+  </div>
+
+  <script>
+    // 1. 随机显示摸鱼金句
+    const quotes = [
+        "今天的目标：在老板发现之前摸到下午三点！",
+        "摸鱼一时爽，一直摸鱼一直爽。",
+        "工作再累，也要摸会儿鱼，人生短暂，快乐至上！",
+        "有事没事起身晃晃，摸鱼是职场生存的艺术。",
+        "摸鱼，是打工人最后的倔强。",
+        "老板的利润来自你的摸鱼，别让他失望！"
+    ];
+
+    function displayRandomQuote() {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        document.getElementById("randomQuote").textContent = quotes[randomIndex];
+    }
+
+    // 2. 获取当前日期和星期
+    function displayCurrentDate() {
+        const now = new Date();
+        const daysOfWeek = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        const currentDay = `今天是 ${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日，${daysOfWeek[now.getDay()]}`;
+        document.getElementById("currentDate").textContent = currentDay;
+
+        // 3. 根据时间显示问候语
+        const hour = now.getHours();
+        let greeting = "摸鱼人，您好！"; // 默认问候语
+
+        if (hour >= 6 && hour < 12) {
+            greeting = "上午好，摸鱼人！";
+        } else if (hour >= 12 && hour < 18) {
+            greeting = "下午好，摸鱼人！";
+        } else if (hour >= 18 && hour < 22) {
+            greeting = "晚上好，摸鱼人！";
+        } else {
+            greeting = "深夜好，摸鱼人！";
+        }
+        document.getElementById("greeting").textContent = greeting;
+    }
+
+    // 4. 动态展示节假日和调休倒计时
+    const holidays = [
+        { name: "元旦", date: "2025-01-01" },
+        { name: "春节", date: "2025-01-28", note: "调休：1月26日(周日)上班" },
+        { name: "清明节", date: "2025-04-05", note: "调休：4月4日(周五)" },
+        { name: "劳动节", date: "2025-05-01" },
+        { name: "端午节", date: "2025-06-10" },
+        { name: "中秋节", date: "2025-09-22" },
+        { name: "国庆节", date: "2025-10-01", note: "调休：9月29日、9月30日上班" },
+    ];
+
+    function calculateDaysRemaining(targetDate) {
+        const now = new Date();
+        const target = new Date(targetDate);
+        const timeDifference = target - now;
+        return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    }
+
+    function displayHolidays() {
+        const holidayList = document.getElementById("holidayList");
+        holidayList.innerHTML = ""; // 清空列表
+        holidays.forEach(holiday => {
+            const daysRemaining = calculateDaysRemaining(holiday.date);
+            const listItem = document.createElement("li");
+            listItem.textContent = `${holiday.name} 放假还有 ${daysRemaining} 天`;
+            if (holiday.note) {
+                const noteItem = document.createElement("p");
+                noteItem.style.color = "#e63946";
+                noteItem.textContent = `（${holiday.note}）`;
+                listItem.appendChild(noteItem);
+            }
+            holidayList.appendChild(listItem);
+        });
+    }
+
+    // 5. 切换白天/黑夜模式
+    function toggleTheme() {
+        const body = document.body;
+        if (body.classList.contains('day-mode')) {
+            body.classList.remove('day-mode');
+            body.classList.add('night-mode');
+        } else {
+            body.classList.remove('night-mode');
+            body.classList.add('day-mode');
+        }
+    }
+
+    // 6. 初始化页面
+    function init() {
+        displayCurrentDate();
+        displayRandomQuote();
+        displayHolidays();
+    }
+
+    // 设置默认模式为白天模式
+    document.body.classList.add('day-mode');
+
+    init();
+    setInterval(init, 86400000); // 每天更新一次
+  </script>
+</body>
+</html>
